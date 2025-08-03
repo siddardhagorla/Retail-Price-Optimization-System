@@ -1,0 +1,48 @@
+import java.util.*;
+
+class Product {
+    String name;
+    double costPrice;
+    double currentPrice;
+    int demand;
+
+    public Product(String name, double costPrice, double currentPrice, int demand) {
+        this.name = name;
+        this.costPrice = costPrice;
+        this.currentPrice = currentPrice;
+        this.demand = demand;
+    }
+}
+
+public class PriceOptimizer {
+
+    // Simple demand model: demand decreases as price increases
+    public static int predictDemand(Product p, double newPrice) {
+        double elasticity = -2.0; // sensitivity factor
+        double demandChange = (newPrice - p.currentPrice) * elasticity;
+        return Math.max(0, (int)(p.demand + demandChange));
+    }
+
+    // Find best price
+    public static double optimizePrice(Product p) {
+        double bestPrice = p.currentPrice;
+        double maxProfit = 0;
+
+        for (double price = p.costPrice + 1; price <= p.currentPrice * 1.5; price += 1) {
+            int demand = predictDemand(p, price);
+            double profit = (price - p.costPrice) * demand;
+            if (profit > maxProfit) {
+                maxProfit = profit;
+                bestPrice = price;
+            }
+        }
+        System.out.println("Max Profit: " + maxProfit);
+        return bestPrice;
+    }
+
+    public static void main(String[] args) {
+        Product p = new Product("Laptop", 30000, 40000, 500); // cost, price, demand
+        double optimalPrice = optimizePrice(p);
+        System.out.println("Optimal Price for " + p.name + " = ₹" + optimalPrice);
+    }
+}
